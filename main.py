@@ -74,8 +74,34 @@ def find_output_volt(filter_type: Literal["RC_low", "RC_high", "RL_low", "RL_hig
 
 
 def print_table(data: list[dict]):
-    table = tabulate.tabulate(data, headers="keys", tablefmt="pipe", colalign=("center", "center", "center", "center"))
-    print(table)
+    if not data:
+        return
+
+    # Get headers from keys of the first dict
+    headers = list(data[0].keys())
+
+    # Calculate column widths
+    col_widths = [len(h) for h in headers]
+    for row in data:
+        for i, h in enumerate(headers):
+            col_widths[i] = max(col_widths[i], len(str(row[h])))
+
+    # Build separator line
+    sep_line = "+".join("-" * (w + 2) for w in col_widths)
+    sep_line = "+" + sep_line + "+"
+
+    # Print header
+    header_row = "| " + " | ".join(h.ljust(col_widths[i]) for i, h in enumerate(headers)) + " |"
+    print(sep_line)
+    print(header_row)
+    print(sep_line)
+
+    # Print rows
+    for row in data:
+        row_str = "| " + " | ".join(str(row[h]).ljust(col_widths[i]) for i, h in enumerate(headers)) + " |"
+        print(row_str)
+    print(sep_line)
+
 
 
 def main():
